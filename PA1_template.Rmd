@@ -5,7 +5,7 @@ date: "Friday, October 17, 2014"
 output: html_document
 ---
 ====================================
-```{r myCode, echo=TRUE}
+```{r mycode, echo=TRUE}
 # required packages
 library(data.table)
 library(lubridate)
@@ -16,7 +16,9 @@ setwd("C:\\RCode")
 if (!file.exists('data')) {
     dir.create('data')
 }
+```
 # Loading and preprocessing the data
+```{r mycode1, echo=TRUE}
 activity<-read.csv('data/activity.csv',header=TRUE)
 steps <- tapply(activity$steps, activity$date, sum)
 hist(steps, breaks = 10, col = "red", main = "Histogram of Steps Taken Per Day", 
@@ -27,25 +29,31 @@ meanTotalSteps <- mean(steps, na.rm = TRUE)
 medianTotalSteps <- median(steps, na.rm = TRUE)
 meanTotalSteps
 medianTotalSteps
-
+```
 #What is the average daily activity pattern?
 #First get the average of steps per interval
+```{r mycode2, echo=TRUE}
 averageSteps <- tapply(activity$steps, activity$interval, mean, na.rm = TRUE)
 intervalLevels <- as.numeric(levels(factor(activity$interval)))
 plot(intervalLevels, averageSteps, type = "l", col = "blue", xlab = "5-minute interval", 
      ylab = "average number of steps taken", main = "Average steps Taken Across All Days", frame = F)
+```
 
 #Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+```{r mycode3, echo=TRUE}
 names(which.max(averageSteps))
-
+```
 #Imputing missing values
 
 #Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+```{r mycode4, echo=TRUE}
 nbrMissingValues <- sum(is.na(activity$steps))
 nbrMissingValues
+```
 
 #Create a new dataset that is equal to the original dataset but with the missing data filled in.
 #Strategy: Fill the missing value with the value from the same interval by using mod288.
+```{r mycode5, echo=TRUE}
 newDataSet <- activity
 for( i in 1:dim(newDataSet)[1]){
     if(is.na(newDataSet$steps[i])){
@@ -66,15 +74,17 @@ abline(v=median(newSteps), lty=4, col="black")
 text(mean(newSteps),25,labels="mean", pos=4, col="blue")         
 text(mean(newSteps),23,labels="median", pos=4, col="black")        
 rug(newSteps, col="chocolate")
-
+```
 
 #report the mean and median 
+```{r mycode6, echo=TRUE}
 newMean <- mean(newSteps)
 newMedian <- median(newSteps)
 newMean
 newMedian
-
+```
 #Are there differences in activity patterns between weekdays and weekends?
+```{r mycode7, echo=TRUE}
 newDataSet$date <- as.Date(strptime(newDataSet$date, format="%Y-%m-%d")) # convert date to a date() class variable  
 newDataSet$day <- weekdays(newDataSet$date)                              # build a 'day' factor to hold weekday / weekend  
 for (i in 1:nrow(newDataSet)) {                                       # for each day  
@@ -91,6 +101,5 @@ for (i in 1:nrow(newDataSet)) {                                       # for each
 stepsInterval2 = aggregate(steps ~ interval + day, newDataSet, mean)
 
 xyplot(steps ~ interval | factor(day), data = stepsInterval2, aspect = 1/2, type = "l")
-
 
 ```
